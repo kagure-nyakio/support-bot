@@ -16,7 +16,7 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - { name: Format, recipe: format }
+          - { name: Format, recipe: format-check }
           - { name: Lint, recipe: lint }
           - { name: Typecheck, recipe: typecheck }
           - { name: Unused/missing deps, recipe: deps-check }
