@@ -1,0 +1,33 @@
+name: Checks
+
+# Reusable: called by pr.yml and main.yml. Not triggered on its own.
+on:
+  workflow_call:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    name: ${{ matrix.name }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { name: Format, recipe: format }
+          - { name: Lint, recipe: lint }
+          - { name: Typecheck, recipe: typecheck }
+          - { name: Unused/missing deps, recipe: deps-check }
+          - { name: Lockfile check, recipe: lock-check }
+          - { name: Test, recipe: test }
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          lfs: ${{ matrix.recipe == 'test' }}
+      - uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+      - uses: extractions/setup-just@v2
+      - run: just ${{ matrix.recipe }}
